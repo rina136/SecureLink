@@ -1,15 +1,31 @@
 services:
+
   postgres:
     image: postgres:17
-    container_name: url-shortener-db
+    container_name: secure-link-db
     environment:
-      POSTGRES_USER: urluser
-      POSTGRES_PASSWORD: urlpassword
-      POSTGRES_DB: urlshortener
+      POSTGRES_USER: securelinkuser
+      POSTGRES_PASSWORD: securelink_password
+      POSTGRES_DB: securelink
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    container_name: secure-link-api
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: securelinkuser
+      DB_PASSWORD: securelink_password
+      DB_NAME: securelink
+      PORT: 3000
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
