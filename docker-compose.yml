@@ -4,9 +4,9 @@ services:
     image: postgres:17
     container_name: secure-link-db
     environment:
-      POSTGRES_USER: securelinkuser
-      POSTGRES_PASSWORD: securelink_password
-      POSTGRES_DB: securelink
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -20,9 +20,9 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USER: securelinkuser
-      DB_PASSWORD: securelink_password
-      DB_NAME: securelink
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
       PORT: 3000
     depends_on:
       - postgres

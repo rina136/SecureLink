@@ -1,4 +1,5 @@
 const express = require("express");
+const cors=require("cors");
 require("dotenv").config({ path: "./.env" });
 
 const db = require("./db");
@@ -6,6 +7,7 @@ const QRCode = require("qrcode");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const generateId = () => {
