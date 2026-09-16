@@ -123,6 +123,13 @@ app.get("/health", async (req, res) => {
 
 app.get("/:id", async (req, res) => {
 
+    console.log("----- REDIRECT -----");
+    console.log("Code:", req.params.id);
+    console.log("Method:", req.method);
+    console.log("User-Agent:", req.headers["user-agent"]);
+    console.log("Referer:", req.headers.referer);
+    console.log("Time:", new Date().toISOString());
+    
     const shortCode = req.params.id;
 
     const ip =

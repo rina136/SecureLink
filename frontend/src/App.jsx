@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -10,6 +10,32 @@ function App() {
   const [qrCode, setQrCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clicks, setClicks] = useState(0);
+
+  useEffect(() => {
+    if (!shortUrl) return;
+    const shortCode = shortUrl.split("/").pop();
+
+    const fetchAnalytics = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/analytics/${shortCode}`
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setClicks(Number(data.total_clicks));
+        }
+      } catch (error) {
+        console.error("Could not fetch analytics");
+      }
+    };
+    fetchAnalytics();
+    const interval = setInterval(fetchAnalytics, 5000);
+
+    return () => clearInterval(interval);
+    }, [shortUrl]);
 
   const shortenUrl = async () => {
     if (!url) {
@@ -53,7 +79,19 @@ if (expiresIn) {
       if (response.ok) {
         setShortUrl(data.shortUrl);
         setQrCode(data.qrCode);
-      } else {
+
+        const shortCode = data.shortUrl.split("/").pop();
+
+        const analyticsResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/analytics/${shortCode}`
+        );
+
+        const analyticsData = await analyticsResponse.json();
+
+        if (analyticsResponse.ok) {
+          setClicks(Number(analyticsData.total_clicks));
+        }
+      }else {
         setError(data.message || "Something went wrong");
       }
 
@@ -66,6 +104,28 @@ if (expiresIn) {
 
   const copyUrl = async () => {
     await navigator.clipboard.writeText(shortUrl);
+  };
+
+  const refreshAnalytics = async () => {
+  if (!shortUrl) return;
+
+  try {
+    const shortCode = shortUrl.split("/").pop();
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/analytics/${shortCode}`
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setClicks(Number(data.total_clicks));
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    alert("Could not fetch analytics");
+  }
   };
 
   return (
@@ -150,6 +210,12 @@ if (expiresIn) {
               />
             </div>
           )}
+          <div className="analytics">
+          <p>Total clicks</p>
+          <strong>{clicks}</strong>
+
+         
+        </div>
 
         </div>
       )}
